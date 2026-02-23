@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TikTok Downloader</title>
 
@@ -39,6 +40,7 @@ button{
     background:#ff0050;
     color:white;
     cursor:pointer;
+    margin-top:5px;
 }
 .preview{
     margin-top:20px;
@@ -88,7 +90,6 @@ async function downloadVideo(){
 
     try{
 
-        // Public proxy API (No key required)
         const response = await fetch("https://tikwm.com/api/?url=" + encodeURIComponent(url));
         const data = await response.json();
 
@@ -98,8 +99,13 @@ async function downloadVideo(){
 
             result.innerHTML = `
                 <img src="${data.data.cover}">
-                <a href="${data.data.play}" class="btn">Download No Watermark</a>
-                <a href="${data.data.wmplay}" class="btn" style="background:#444;color:white;">Download With Watermark</a>
+                <button class="btn" onclick="forceDownload('${data.data.play}')">
+                    Download No Watermark
+                </button>
+                <button class="btn" style="background:#444;color:white;"
+                    onclick="forceDownload('${data.data.wmplay}')">
+                    Download With Watermark
+                </button>
             `;
 
         }else{
@@ -110,6 +116,156 @@ async function downloadVideo(){
         loader.innerHTML = "";
         result.innerHTML = "Error fetching video.";
     }
+
+}
+
+function forceDownload(url){
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+}
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Downloader</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f0f0f;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+.container{
+    width:100%;
+    max-width:420px;
+    padding:20px;
+    text-align:center;
+}
+h1{margin-bottom:20px;}
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#1e1e1e;
+    color:white;
+    margin-bottom:10px;
+}
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#ff0050;
+    color:white;
+    cursor:pointer;
+    margin-top:5px;
+}
+.preview{
+    margin-top:20px;
+}
+.preview img{
+    width:100%;
+    border-radius:12px;
+}
+.btn{
+    display:block;
+    margin-top:10px;
+    padding:12px;
+    background:#00ffcc;
+    color:black;
+    text-decoration:none;
+    border-radius:8px;
+}
+.loader{
+    margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>TikTok Downloader</h1>
+
+<input type="text" id="url" placeholder="Paste TikTok URL">
+<button onclick="downloadVideo()">Download</button>
+
+<div class="loader" id="loader"></div>
+<div class="preview" id="result"></div>
+
+</div>
+
+<script>
+
+async function downloadVideo(){
+
+    const url = document.getElementById("url").value;
+    const loader = document.getElementById("loader");
+    const result = document.getElementById("result");
+
+    result.innerHTML = "";
+    loader.innerHTML = "Loading...";
+
+    try{
+
+        const response = await fetch("https://tikwm.com/api/?url=" + encodeURIComponent(url));
+        const data = await response.json();
+
+        loader.innerHTML = "";
+
+        if(data.data){
+
+            result.innerHTML = `
+                <img src="${data.data.cover}">
+                <button class="btn" onclick="forceDownload('${data.data.play}')">
+                    Download No Watermark
+                </button>
+                <button class="btn" style="background:#444;color:white;"
+                    onclick="forceDownload('${data.data.wmplay}')">
+                    Download With Watermark
+                </button>
+            `;
+
+        }else{
+            result.innerHTML = "Video not found.";
+        }
+
+    }catch(error){
+        loader.innerHTML = "";
+        result.innerHTML = "Error fetching video.";
+    }
+
+}
+
+function forceDownload(url){
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
 }
 
